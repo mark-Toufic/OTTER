@@ -125,8 +125,8 @@ int main() {
 	{//   X      Y     Z       R     G     B
 		 0.5f, -0.5f, 0.5f,  0.0f, 0.0f, 0.0f
 		,0.5f,  0.5f, 0.5f,  0.3f, 0.2f, 0.5f,
-		-0.5f,  0.5f, 0.5f,  1.0f, 1.0f, 0.0f,
-		-0.5f, -0.5f, 0.5f,  1.0f, 1.0f, 1.0f
+		-0.5f,  0.5f, 0.5f,  0.0f, 1.0f, 3.0f,
+		-0.5f, -0.5f, 0.5f,  4.0f, 7.0f, 4.0f
 	};
 
 	VertexBuffer* interleaved_vbo = new VertexBuffer();
