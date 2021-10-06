@@ -141,6 +141,14 @@ int main() {
 		{ 1, 3, AttributeType::Float, 0, NULL }
 		});
 
+
+
+
+
+
+
+
+
 	static const float interleaved[] = {
 		// X      Y    Z       R     G     B
 		 0.5f, -0.5f, 0.5f,   0.0f, 0.0f, 0.0f,
@@ -166,6 +174,37 @@ int main() {
 		});
 	vao2->SetIndexBuffer(interleaved_ibo);
 
+
+
+	static const float interleaved1[] = {
+			// X      Y    Z       R     G     B
+			 0.5f, 0.5f, 0.5f,   0.0f, 0.0f, 1.0f,
+			 0.5f,  0.5f, 0.5f,   0.3f, 5.2f, 0.5f,
+			-0.5f,  0.5f, 0.5f,   5.0f, 6.0f, 3.0f,
+			-0.5f, -0.5f, 0.5f,   4.0f, 1.0f, 1.0f
+		};
+		VertexBuffer::Sptr interleaved_vbo1 = VertexBuffer::Create();
+		interleaved_vbo1->LoadData(interleaved1, 6 * 4);
+
+		static const uint16_t indices1[] = {
+			3, 0, 1,
+			3, 1, 2
+		};
+		IndexBuffer::Sptr interleaved_ibo1 = IndexBuffer::Create();
+		interleaved_ibo1->LoadData(indices1, 3 * 2);
+
+		size_t stride1 = sizeof(float) * 6;
+		VertexArrayObject::Sptr vao3 = VertexArrayObject::Create();
+		vao3->AddVertexBuffer(interleaved_vbo1, {
+			BufferAttribute(0, 3, AttributeType::Float, stride1, 0),
+			BufferAttribute(1, 3, AttributeType::Float, stride1, sizeof(float) * 3),
+			});
+		vao3->SetIndexBuffer(interleaved_ibo1);
+
+
+
+
+
 	// Load our shaders
 	Shader::Sptr shader = Shader::Create();
 	shader->LoadShaderPartFromFile("shaders/vertex_shader.glsl", ShaderPartType::Vertex);
@@ -180,6 +219,7 @@ int main() {
 		// Create a mat4 to store our mvp (for now)
 	glm::mat4 transform = glm::mat4(1.0f);
 	glm::mat4 transform2 = glm::mat4(1.0f);
+	glm::mat4 transform3 = glm::mat4(1.0f);
 
 
 	Camera::Sptr camera = Camera::Create();
@@ -203,21 +243,28 @@ int main() {
 		// Rotate our models around the z axis
 		transform = glm::rotate(glm::mat4(1.f), static_cast<float>(thisFrame), glm::vec3(0, 0, 1));
 		transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0f, glm::sin(static_cast<float>(thisFrame))));
+		transform3 = glm::translate(glm::mat4(1.0f), glm::vec3(glm::sin(static_cast<float>(thisFrame)), 0.0f, 0.0f));
 
 		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Bind our shader and upload the uniform
-		shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection() * transform2);
+		
 		shader->Bind();
 		shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection() * transform);
 
 		vao->Bind();
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		vao->Unbind();
-
+		shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection()* transform2);
+		
 		vao2->Bind();
 		glDrawElements(GL_TRIANGLES, interleaved_ibo->GetElementCount(), (GLenum)interleaved_ibo->GetElementType(), nullptr);
+		vao2->Unbind();
+
+		shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection() * transform3);
+		vao3->Bind();
+		glDrawElements(GL_TRIANGLES, interleaved_ibo1->GetElementCount(), (GLenum)interleaved_ibo1->GetElementType(), nullptr);
 
 		VertexArrayObject::Unbind();
 
