@@ -47,7 +47,7 @@ void Camera::ResizeWindow(int windowWidth, int windowHeight) {
 
 void Camera::SetOrthoEnabled(bool value)
 {
-	_isOrtho = true;
+	_isOrtho = value;
 	__CalculateProjection();
 }
 
